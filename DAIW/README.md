@@ -12,7 +12,7 @@ DAIW is a revolutionary desktop application that transforms music production int
 
 - 🤖 **AI-Powered Assistance** - Claude/GPT integration for musical intelligence
 - 🎹 **Interactive Avatar** - Animated bass clef that responds to your workflow
-- 🌐 **Real-Time Collaboration** - Work with producers worldwide via Neuralink Mode
+- 🌐 **Real-Time Collaboration** - Work with producers worldwide via CollabNet Mode
 - 🎥 **Advanced Audio Tools** - YouTube analysis, STEM separation, humming-to-MIDI
 - 🔧 **Meta-Programming** - Avatar writes custom tools based on your workflow
 - 🎨 **Visual Feedback** - See music theory and patterns come alive
@@ -48,7 +48,7 @@ Example: You always play chords on beat 1 and arpeggios on beat 2
 → Lock Mode creates `auto_arpeggiator.py`
 → Avatar now complements your playing automatically!
 
-### 🧠 Neuralink Mode v1.5 ⚡ NEW!
+### 🧠 CollabNet Mode v1.5 ⚡ NEW!
 
 **Real-Time Collaborative Music Production over WAN**
 
@@ -59,7 +59,7 @@ Work with other producers anywhere in the world with <100ms action mirroring:
 - Password-protected sessions
 - Visual user avatars
 
-👉 **[Full Documentation](docs/NEURALINK_MODE.md)**
+👉 **[Full Documentation](docs/COLLABNET_MODE.md)**
 
 ### 🎥 YouTube Reference Analyzer
 
@@ -103,7 +103,7 @@ DAIW/
 │   │   ├── bass_clef_widget.py       # Animated avatar
 │   │   ├── transparent_window.py     # Main window
 │   │   ├── feature_dialogs.py        # Interactive features
-│   │   └── neuralink_dialogs.py      # Collaboration UI
+│   │   └── collabnet_dialogs.py      # Collaboration UI
 │   │
 │   ├── brain/             # AI & Logic
 │   │   ├── ai_controller.py          # LangChain integration
@@ -118,8 +118,8 @@ DAIW/
 │   │   └── humming_detector.py       # Pitch detection
 │   │
 │   ├── network/           # Collaboration
-│   │   ├── neuralink_server.py       # WebSocket server
-│   │   └── neuralink_client.py       # WebSocket client
+│   │   ├── collabnet_server.py       # WebSocket server
+│   │   └── collabnet_client.py       # WebSocket client
 │   │
 │   ├── dynamic_tools/     # Music library & generated skills
 │   │   ├── music_theory.py           # Harmony/rhythm toolkit
@@ -130,7 +130,7 @@ DAIW/
 ├── docs/                  # Documentation
 │   ├── ARCHITECTURE.md
 │   ├── INTERACTIVE_FEATURES.md
-│   └── NEURALINK_MODE.md
+│   └── COLLABNET_MODE.md
 │
 ├── examples/              # Example workflows & skills
 ├── tests/                 # Test suite
@@ -183,8 +183,8 @@ AI_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-xxx
 OPENAI_API_KEY=sk-xxx
 
-# Neuralink Server (optional)
-NEURALINK_SERVER=ws://localhost:8765
+# CollabNet Server (optional)
+COLLABNET_SERVER=ws://localhost:8765
 ```
 
 ---
@@ -210,7 +210,7 @@ NEURALINK_SERVER=ws://localhost:8765
 ✂️ Separate STEM
 🎤 Hum → MIDI
 ───────────────────────
-🧠 Neuralink Mode
+🧠 CollabNet Mode
 ───────────────────────
 ⚙️ Settings
 ❌ Exit
@@ -228,7 +228,7 @@ NEURALINK_SERVER=ws://localhost:8765
 
 #### Workflow 2: Collaborative Production
 ```
-1. Start Neuralink Server
+1. Start CollabNet Server
 2. Create session "Beat Making"
 3. Friend joins from another city
 4. Jam together in real-time
@@ -268,15 +268,15 @@ NEURALINK_SERVER=ws://localhost:8765
 
 ### Optional
 - **PyTorch** - Pattern recognition
-- **Docker** - Neuralink server deployment
+- **Docker** - CollabNet server deployment
 
 ---
 
-## 🌐 Neuralink Server Deployment
+## 🌐 CollabNet Server Deployment
 
 ### Local Testing
 ```bash
-python daiw/network/neuralink_server.py
+python daiw/network/collabnet_server.py
 ```
 
 ### Cloud Deployment (DigitalOcean)
@@ -286,16 +286,16 @@ apt update && apt install python3 python3-pip
 pip3 install websockets
 
 # Run with systemd
-sudo systemctl enable daiw-neuralink
-sudo systemctl start daiw-neuralink
+sudo systemctl enable daiw-collabnet
+sudo systemctl start daiw-collabnet
 ```
 
 ### Docker
 ```bash
-docker run -d -p 8765:8765 daiw/neuralink-server
+docker run -d -p 8765:8765 daiw/collabnet-server
 ```
 
-👉 **[Deployment Guide](docs/NEURALINK_MODE.md#deployment)**
+👉 **[Deployment Guide](docs/COLLABNET_MODE.md#deployment)**
 
 ---
 
@@ -352,7 +352,7 @@ Over 300 lines of musical building blocks for AI-generated skills!
 
 ### v1.6 (Next Release)
 - [ ] WebRTC P2P data channels (ultra-low latency)
-- [ ] End-to-end encryption (Neuralink)
+- [ ] End-to-end encryption (CollabNet)
 - [ ] Voice chat integration
 - [ ] Mobile companion app (iOS/Android)
 - [ ] FL Studio / Logic Pro support
@@ -375,7 +375,7 @@ Over 300 lines of musical building blocks for AI-generated skills!
 
 ## 📊 Performance
 
-- **Latency**: <100ms action mirroring (Neuralink)
+- **Latency**: <100ms action mirroring (CollabNet)
 - **GUI**: 60 FPS animations
 - **Audio**: Real-time pitch detection
 - **AI**: <2s response time (Claude/GPT)
@@ -392,7 +392,7 @@ pytest tests/
 
 # Specific modules
 pytest tests/test_music_theory.py
-pytest tests/test_neuralink_client.py
+pytest tests/test_collabnet_client.py
 
 # With coverage
 pytest --cov=daiw tests/
@@ -404,7 +404,7 @@ pytest --cov=daiw tests/
 
 We welcome contributions! Areas we're looking for help:
 
-- **Neuralink WebRTC implementation**
+- **CollabNet WebRTC implementation**
 - **Additional DAW integrations** (Logic, FL Studio, Bitwig)
 - **Mobile clients** (iOS/Android)
 - **Plugin format** (VST/AU)

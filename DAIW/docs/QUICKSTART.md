@@ -145,7 +145,7 @@ Access the context menu to:
 ## Next Steps
 
 - **Read full docs:** `docs/ARCHITECTURE.md`, `docs/INTERACTIVE_FEATURES.md`
-- **Try Neuralink Mode:** `docs/NEURALINK_MODE.md` for collaborative sessions
+- **Try CollabNet Mode:** `docs/COLLABNET_MODE.md` for collaborative sessions
 - **Lock Mode:** Create custom skills via meta-programming
 - **STEM Separator:** Extract vocals, drums, bass from songs
 - **Humming Recorder:** Sing melodies, convert to MIDI
@@ -156,7 +156,7 @@ Access the context menu to:
 # Start DAIW
 daiw
 
-# Start Neuralink server
+# Start CollabNet server
 daiw-server
 
 # Run tests

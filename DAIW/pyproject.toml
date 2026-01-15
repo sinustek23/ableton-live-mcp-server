@@ -54,7 +54,7 @@ dependencies = [
     "pydub>=0.25.1",
     "resampy>=0.4.2",
 
-    # Neuralink Collaboration
+    # CollabNet Collaboration
     "websockets>=12.0",
 
     # AI & LangChain
@@ -92,7 +92,7 @@ Issues = "https://github.com/yourusername/DAIW/issues"
 
 [project.scripts]
 daiw = "daiw.main:main"
-daiw-server = "daiw.network.neuralink_server:run_server"
+daiw-server = "daiw.network.collabnet_server:run_server"
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
@@ -124,5 +124,5 @@ addopts = "-v --strict-markers"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
-    "neuralink: marks tests requiring neuralink server",
+    "collabnet: marks tests requiring collabnet server",
 ]

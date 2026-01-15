@@ -1,8 +1,8 @@
 """
-Neuralink Dialogs - GUI für kollaborative Sessions
+CollabNet Dialogs - GUI für kollaborative Sessions
 
 Ermöglicht das Erstellen, Beitreten und Verwalten von
-Neuralink-Collaboration-Sessions
+CollabNet-Collaboration-Sessions
 """
 
 from typing import Optional, List
@@ -27,8 +27,8 @@ from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont, QColor
 
 
-class NeuralinkSessionDialog(QDialog):
-    """Main dialog for Neuralink session management"""
+class CollabNetSessionDialog(QDialog):
+    """Main dialog for CollabNet session management"""
 
     create_session_requested = pyqtSignal(str, str, int)  # name, password, max_users
     join_session_requested = pyqtSignal(str, str)  # session_id, password
@@ -38,7 +38,7 @@ class NeuralinkSessionDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("🧠 Neuralink Mode - Collaborative Sessions")
+        self.setWindowTitle("🧠 CollabNet Mode - Collaborative Sessions")
         self.setMinimumWidth(600)
         self.setMinimumHeight(500)
 
@@ -48,7 +48,7 @@ class NeuralinkSessionDialog(QDialog):
         layout = QVBoxLayout()
 
         # Title
-        title = QLabel("🧠 Neuralink Collaboration")
+        title = QLabel("🧠 CollabNet Collaboration")
         title.setFont(QFont("Arial", 18, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -323,15 +323,15 @@ class NeuralinkSessionDialog(QDialog):
         self.chat_display.append(f"<b>{username}:</b> {message}")
 
 
-class NeuralinkConnectDialog(QDialog):
-    """Dialog for connecting to Neuralink server"""
+class CollabNetConnectDialog(QDialog):
+    """Dialog for connecting to CollabNet server"""
 
     connect_requested = pyqtSignal(str, str, str)  # server_url, username, color
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Connect to Neuralink")
+        self.setWindowTitle("Connect to CollabNet")
         self.setMinimumWidth(400)
 
         self._setup_ui()
@@ -340,7 +340,7 @@ class NeuralinkConnectDialog(QDialog):
         layout = QVBoxLayout()
 
         # Title
-        title = QLabel("🧠 Connect to Neuralink Server")
+        title = QLabel("🧠 Connect to CollabNet Server")
         title.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         layout.addWidget(title)
 

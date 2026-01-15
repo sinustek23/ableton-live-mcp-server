@@ -52,7 +52,7 @@ setup(
     entry_points={
         "console_scripts": [
             "daiw=daiw.main:main",
-            "daiw-server=daiw.network.neuralink_server:run_server",
+            "daiw-server=daiw.network.collabnet_server:run_server",
         ],
     },
     python_requires=">=3.10",

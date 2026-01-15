@@ -1,10 +1,10 @@
-# 🧠 Neuralink Mode v1.5
+# 🧠 CollabNet Mode v1.5
 
 **Real-Time Collaborative Music Production über WAN** - Arbeite mit anderen Produzenten zusammen, egal wo sie sind!
 
 ## 🎯 Konzept
 
-Neuralink Mode verwandelt den DAIW (Digital AI Workspace) in einen **kollaborativen Hub**, der mehrere Benutzer über das Internet (WAN) verbindet. **Alle Ableton-Aktionen werden in Echtzeit synchronisiert** - wenn User A einen MIDI-Track bearbeitet, sieht User B die Änderungen sofort!
+CollabNet Mode verwandelt den DAIW (Digital AI Workspace) in einen **kollaborativen Hub**, der mehrere Benutzer über das Internet (WAN) verbindet. **Alle Ableton-Aktionen werden in Echtzeit synchronisiert** - wenn User A einen MIDI-Track bearbeitet, sieht User B die Änderungen sofort!
 
 ### Was ist das Besondere?
 
@@ -20,7 +20,7 @@ Neuralink Mode verwandelt den DAIW (Digital AI Workspace) in einen **kollaborati
 ### Hybrid Approach: Server + P2P
 
 ```
-User A (Berlin)          Neuralink Server          User B (London)
+User A (Berlin)          CollabNet Server          User B (London)
     Avatar  ←──WebSocket──→  (Signaling)  ←──WebSocket──→  Avatar
        │                                                       │
        └───────────────Action Mirroring──────────────────────┘
@@ -28,46 +28,46 @@ User A (Berlin)          Neuralink Server          User B (London)
 
 **Komponenten:**
 
-1. **Neuralink Server** (`neuralink_server.py`)
+1. **CollabNet Server** (`collabnet_server.py`)
    - WebSocket Server für Session Management
    - Action-Routing zwischen Clients
    - User Authentication & Authorization
 
-2. **Neuralink Client** (`neuralink_client.py`)
+2. **CollabNet Client** (`collabnet_client.py`)
    - WebSocket Client im Avatar integriert
    - Action Serialization & Deserialization
    - Local Action Buffering
 
-3. **GUI** (`neuralink_dialogs.py`)
+3. **GUI** (`collabnet_dialogs.py`)
    - Session erstellen/beitreten
    - User-Liste & Status
    - Chat
 
 ## 🚀 Verwendung
 
-### 1. Neuralink Server starten
+### 1. CollabNet Server starten
 
 **Option A: Lokaler Server (für Tests)**
 ```bash
-python daiw/network/neuralink_server.py
+python daiw/network/collabnet_server.py
 ```
 Server läuft auf `ws://localhost:8765`
 
 **Option B: Public Server (für WAN)**
 ```bash
 # Mit öffentlicher IP
-python daiw/network/neuralink_server.py --host 0.0.0.0 --port 8765
+python daiw/network/collabnet_server.py --host 0.0.0.0 --port 8765
 ```
 
 **Option C: Cloud Server (Empfohlen für Produktion)**
 ```bash
 # Auf VPS/Cloud-Server (z.B. AWS, DigitalOcean)
-sudo python daiw/network/neuralink_server.py --host 0.0.0.0 --port 8765
+sudo python daiw/network/collabnet_server.py --host 0.0.0.0 --port 8765
 ```
 
 ### 2. Avatar verbinden
 
-1. **Rechtsklick auf Avatar** → `🧠 Neuralink Mode`
+1. **Rechtsklick auf Avatar** → `🧠 CollabNet Mode`
 2. **Connect Dialog**:
    - Server: `ws://server-ip:8765`
    - Username: Dein Producer-Name
@@ -308,19 +308,19 @@ apt update && apt install python3.10 python3-pip
 pip3 install websockets
 
 # 4. Copy server file
-scp daiw/network/neuralink_server.py root@your-droplet-ip:/root/
+scp daiw/network/collabnet_server.py root@your-droplet-ip:/root/
 
 # 5. Run with systemd
-cat > /etc/systemd/system/neuralink.service <<EOF
+cat > /etc/systemd/system/collabnet.service <<EOF
 [Unit]
-Description=Neuralink Collaboration Server
+Description=CollabNet Collaboration Server
 After=network.target
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=/root
-ExecStart=/usr/bin/python3 /root/neuralink_server.py
+ExecStart=/usr/bin/python3 /root/collabnet_server.py
 Restart=always
 
 [Install]
@@ -328,11 +328,11 @@ WantedBy=multi-user.target
 EOF
 
 # 6. Start service
-systemctl enable neuralink
-systemctl start neuralink
+systemctl enable collabnet
+systemctl start collabnet
 
 # 7. Check status
-systemctl status neuralink
+systemctl status collabnet
 ```
 
 ### Option 2: Docker Container
@@ -344,17 +344,17 @@ FROM python:3.10-slim
 WORKDIR /app
 RUN pip install websockets
 
-COPY daiw/network/neuralink_server.py .
+COPY daiw/network/collabnet_server.py .
 
 EXPOSE 8765
 
-CMD ["python", "neuralink_server.py"]
+CMD ["python", "collabnet_server.py"]
 ```
 
 ```bash
 # Build & Run
-docker build -t neuralink-server .
-docker run -d -p 8765:8765 --name neuralink neuralink-server
+docker build -t collabnet-server .
+docker run -d -p 8765:8765 --name collabnet collabnet-server
 ```
 
 ### Option 3: AWS Lambda + API Gateway (Serverless)
@@ -420,7 +420,7 @@ Solutions:
 - [ ] Plugin State Sync
 - [ ] Collaborative Loop Library
 
-### v2.0 - "Neuralink Pro"
+### v2.0 - "CollabNet Pro"
 - [ ] Blockchain-basierte Sessions (Web3)
 - [ ] NFT für Session-Recordings
 - [ ] AI-Moderator (Avatar-hosted Sessions)
@@ -462,10 +462,10 @@ async def on_action(action: CollaborativeAction):
 
 ## 📚 API Reference
 
-### NeuralinkClient
+### CollabNetClient
 
 ```python
-client = NeuralinkClient(username="Producer", color="#00ff00")
+client = CollabNetClient(username="Producer", color="#00ff00")
 
 # Connection
 await client.connect("ws://server:8765")
@@ -494,22 +494,22 @@ client.get_remote_users()     # List[RemoteUser]
 client.get_user_id()          # str
 ```
 
-### NeuralinkServer
+### CollabNetServer
 
 ```python
-server = NeuralinkServer(host="0.0.0.0", port=8765)
+server = CollabNetServer(host="0.0.0.0", port=8765)
 
 # Start/Stop
 await server.start()
 await server.stop()
 
 # Standalone
-python daiw/network/neuralink_server.py
+python daiw/network/collabnet_server.py
 ```
 
 ## 🤝 Contributing
 
-Neuralink Mode ist ein komplexes Feature mit vielen Verbesserungsmöglichkeiten!
+CollabNet Mode ist ein komplexes Feature mit vielen Verbesserungsmöglichkeiten!
 
 **Wanted Features:**
 - WebRTC Integration

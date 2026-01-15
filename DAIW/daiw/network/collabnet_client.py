@@ -1,7 +1,7 @@
 """
-Neuralink Client - WebSocket client for collaborative music production
+CollabNet Client - WebSocket client for collaborative music production
 
-Verbindet den Avatar mit dem Neuralink Server und ermöglicht
+Verbindet den Avatar mit dem CollabNet Server und ermöglicht
 Echtzeit-Synchronisation von Ableton-Aktionen mit anderen Users.
 """
 
@@ -18,9 +18,9 @@ try:
     WEBSOCKETS_AVAILABLE = True
 except ImportError:
     WEBSOCKETS_AVAILABLE = False
-    print("[NeuralinkClient] Warning: websockets not available")
+    print("[CollabNetClient] Warning: websockets not available")
 
-from daiw.network.neuralink_server import ActionType, CollaborativeAction
+from daiw.network.collabnet_server import ActionType, CollaborativeAction
 
 
 @dataclass
@@ -33,9 +33,9 @@ class RemoteUser:
     last_action: Optional[CollaborativeAction] = None
 
 
-class NeuralinkClient:
+class CollabNetClient:
     """
-    WebSocket client for connecting to Neuralink server
+    WebSocket client for connecting to CollabNet server
     """
 
     def __init__(self, username: str = "Producer", color: str = "#00ff00"):
@@ -68,7 +68,7 @@ class NeuralinkClient:
 
     async def connect(self, server_url: str = "ws://localhost:8765") -> bool:
         """
-        Connect to Neuralink server
+        Connect to CollabNet server
 
         Args:
             server_url: WebSocket server URL
@@ -77,11 +77,11 @@ class NeuralinkClient:
             True if connected successfully
         """
         if not WEBSOCKETS_AVAILABLE:
-            print("[NeuralinkClient] websockets not available")
+            print("[CollabNetClient] websockets not available")
             return False
 
         try:
-            print(f"[NeuralinkClient] Connecting to {server_url}")
+            print(f"[CollabNetClient] Connecting to {server_url}")
 
             self._websocket = await websockets.connect(server_url)
 
@@ -102,7 +102,7 @@ class NeuralinkClient:
                 self._user_id = data["user_id"]
                 self._connected = True
 
-                print(f"[NeuralinkClient] ✅ Connected as {self.username} ({self._user_id[:8]})")
+                print(f"[CollabNetClient] ✅ Connected as {self.username} ({self._user_id[:8]})")
 
                 # Start background tasks
                 self._receive_task = asyncio.create_task(self._receive_loop())
@@ -110,11 +110,11 @@ class NeuralinkClient:
 
                 return True
             else:
-                print(f"[NeuralinkClient] Authentication failed: {data}")
+                print(f"[CollabNetClient] Authentication failed: {data}")
                 return False
 
         except Exception as e:
-            print(f"[NeuralinkClient] Connection failed: {e}")
+            print(f"[CollabNetClient] Connection failed: {e}")
             return False
 
     async def disconnect(self) -> None:
@@ -132,7 +132,7 @@ class NeuralinkClient:
         if self._websocket:
             await self._websocket.close()
 
-        print("[NeuralinkClient] Disconnected")
+        print("[CollabNetClient] Disconnected")
 
     def is_connected(self) -> bool:
         """Check if connected"""
@@ -162,7 +162,7 @@ class NeuralinkClient:
             True if created successfully
         """
         if not self._connected:
-            print("[NeuralinkClient] Not connected")
+            print("[CollabNetClient] Not connected")
             return False
 
         try:
@@ -176,7 +176,7 @@ class NeuralinkClient:
             return True
 
         except Exception as e:
-            print(f"[NeuralinkClient] Error creating session: {e}")
+            print(f"[CollabNetClient] Error creating session: {e}")
             return False
 
     async def join_session(
@@ -195,7 +195,7 @@ class NeuralinkClient:
             True if joined successfully
         """
         if not self._connected:
-            print("[NeuralinkClient] Not connected")
+            print("[CollabNetClient] Not connected")
             return False
 
         try:
@@ -208,7 +208,7 @@ class NeuralinkClient:
             return True
 
         except Exception as e:
-            print(f"[NeuralinkClient] Error joining session: {e}")
+            print(f"[CollabNetClient] Error joining session: {e}")
             return False
 
     async def leave_session(self) -> bool:
@@ -230,7 +230,7 @@ class NeuralinkClient:
             return True
 
         except Exception as e:
-            print(f"[NeuralinkClient] Error leaving session: {e}")
+            print(f"[CollabNetClient] Error leaving session: {e}")
             return False
 
     async def list_sessions(self) -> None:
@@ -244,7 +244,7 @@ class NeuralinkClient:
             }))
 
         except Exception as e:
-            print(f"[NeuralinkClient] Error listing sessions: {e}")
+            print(f"[CollabNetClient] Error listing sessions: {e}")
 
     # ========== Action Synchronization ==========
 
@@ -297,10 +297,10 @@ class NeuralinkClient:
                 await self._handle_message(message)
 
         except websockets.exceptions.ConnectionClosed:
-            print("[NeuralinkClient] Connection closed")
+            print("[CollabNetClient] Connection closed")
             self._connected = False
         except Exception as e:
-            print(f"[NeuralinkClient] Receive error: {e}")
+            print(f"[CollabNetClient] Receive error: {e}")
 
     async def _send_loop(self) -> None:
         """Background task for sending queued actions"""
@@ -322,7 +322,7 @@ class NeuralinkClient:
             except asyncio.TimeoutError:
                 continue
             except Exception as e:
-                print(f"[NeuralinkClient] Send error: {e}")
+                print(f"[CollabNetClient] Send error: {e}")
 
     async def _handle_message(self, message: str) -> None:
         """Handle incoming message from server"""
@@ -343,12 +343,12 @@ class NeuralinkClient:
                 self._handle_sessions_list(data)
 
             elif msg_type == "error":
-                print(f"[NeuralinkClient] Server error: {data.get('message')}")
+                print(f"[CollabNetClient] Server error: {data.get('message')}")
 
         except json.JSONDecodeError:
-            print(f"[NeuralinkClient] Invalid JSON: {message}")
+            print(f"[CollabNetClient] Invalid JSON: {message}")
         except Exception as e:
-            print(f"[NeuralinkClient] Error handling message: {e}")
+            print(f"[CollabNetClient] Error handling message: {e}")
 
     def _handle_session_created(self, data: dict) -> None:
         """Handle session created response"""
@@ -356,7 +356,7 @@ class NeuralinkClient:
         self._current_session_name = data["session_name"]
         self._is_host = True
 
-        print(f"[NeuralinkClient] ✅ Session created: {self._current_session_name}")
+        print(f"[CollabNetClient] ✅ Session created: {self._current_session_name}")
 
         # Notify callbacks
         for callback in self._session_update_callbacks:
@@ -378,8 +378,8 @@ class NeuralinkClient:
                     is_host=user_data["is_host"]
                 )
 
-        print(f"[NeuralinkClient] ✅ Joined session: {self._current_session_name}")
-        print(f"[NeuralinkClient] Remote users: {[u.username for u in self._remote_users.values()]}")
+        print(f"[CollabNetClient] ✅ Joined session: {self._current_session_name}")
+        print(f"[CollabNetClient] Remote users: {[u.username for u in self._remote_users.values()]}")
 
         # Notify callbacks
         for callback in self._session_update_callbacks:
@@ -398,7 +398,7 @@ class NeuralinkClient:
                 color=action.data["color"]
             )
 
-            print(f"[NeuralinkClient] 👤 {action.data['username']} joined")
+            print(f"[CollabNetClient] 👤 {action.data['username']} joined")
 
             # Notify callbacks
             for callback in self._user_join_callbacks:
@@ -411,7 +411,7 @@ class NeuralinkClient:
             if user_id in self._remote_users:
                 del self._remote_users[user_id]
 
-            print(f"[NeuralinkClient] 👤 {username} left")
+            print(f"[CollabNetClient] 👤 {username} left")
 
             # Notify callbacks
             for callback in self._user_leave_callbacks:
@@ -430,7 +430,7 @@ class NeuralinkClient:
         """Handle sessions list response"""
         sessions = data.get("sessions", [])
 
-        print(f"[NeuralinkClient] Available sessions ({len(sessions)}):")
+        print(f"[CollabNetClient] Available sessions ({len(sessions)}):")
         for session in sessions:
             print(f"  - {session['session_name']} ({session['user_count']}/{session['max_users']}) - Host: {session['host']}")
 
@@ -475,8 +475,8 @@ class NeuralinkClient:
 
 # Example usage
 async def _example_usage():
-    """Example usage of NeuralinkClient"""
-    client = NeuralinkClient(username="TestProducer", color="#ff0000")
+    """Example usage of CollabNetClient"""
+    client = CollabNetClient(username="TestProducer", color="#ff0000")
 
     # Connect
     if await client.connect("ws://localhost:8765"):

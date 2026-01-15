@@ -1,5 +1,5 @@
 """
-Neuralink Server - WebSocket server for collaborative music production
+CollabNet Server - WebSocket server for collaborative music production
 
 Ermöglicht Echtzeit-Zusammenarbeit zwischen mehreren Music Copilot Avatar Instances
 über WAN (Wide Area Network). Alle Ableton-Aktionen werden synchronisiert.
@@ -19,7 +19,7 @@ try:
     WEBSOCKETS_AVAILABLE = True
 except ImportError:
     WEBSOCKETS_AVAILABLE = False
-    print("[NeuralinkServer] Warning: websockets not available")
+    print("[CollabNetServer] Warning: websockets not available")
 
 
 class ActionType(Enum):
@@ -82,7 +82,7 @@ class CollaborativeAction:
 
 
 @dataclass
-class NeuralinkUser:
+class CollabNetUser:
     """Represents a connected user"""
     user_id: str
     username: str
@@ -94,21 +94,21 @@ class NeuralinkUser:
 
 
 @dataclass
-class NeuralinkSession:
+class CollabNetSession:
     """Represents a collaborative session"""
     session_id: str
     session_name: str
     host_user_id: str
     created_at: float = field(default_factory=lambda: datetime.now().timestamp())
-    users: Dict[str, NeuralinkUser] = field(default_factory=dict)
+    users: Dict[str, CollabNetUser] = field(default_factory=dict)
     action_history: list[CollaborativeAction] = field(default_factory=list)
     max_users: int = 8
     password: Optional[str] = None
 
 
-class NeuralinkServer:
+class CollabNetServer:
     """
-    WebSocket server for Neuralink collaborative sessions
+    WebSocket server for CollabNet collaborative sessions
     """
 
     def __init__(self, host: str = "0.0.0.0", port: int = 8765):
@@ -116,7 +116,7 @@ class NeuralinkServer:
         self.port = port
 
         # Sessions
-        self.sessions: Dict[str, NeuralinkSession] = {}
+        self.sessions: Dict[str, CollabNetSession] = {}
 
         # WebSocket connections (user_id -> websocket)
         self.connections: Dict[str, WebSocketServerProtocol] = {}
@@ -126,13 +126,13 @@ class NeuralinkServer:
         self._server = None
 
     async def start(self) -> bool:
-        """Start the Neuralink server"""
+        """Start the CollabNet server"""
         if not WEBSOCKETS_AVAILABLE:
-            print("[NeuralinkServer] websockets not available")
+            print("[CollabNetServer] websockets not available")
             return False
 
         try:
-            print(f"[NeuralinkServer] Starting on {self.host}:{self.port}")
+            print(f"[CollabNetServer] Starting on {self.host}:{self.port}")
 
             self._server = await websockets.serve(
                 self._handle_connection,
@@ -141,12 +141,12 @@ class NeuralinkServer:
             )
 
             self._running = True
-            print(f"[NeuralinkServer] ✅ Server running on ws://{self.host}:{self.port}")
+            print(f"[CollabNetServer] ✅ Server running on ws://{self.host}:{self.port}")
 
             return True
 
         except Exception as e:
-            print(f"[NeuralinkServer] Failed to start: {e}")
+            print(f"[CollabNetServer] Failed to start: {e}")
             return False
 
     async def stop(self) -> None:
@@ -157,14 +157,14 @@ class NeuralinkServer:
             self._server.close()
             await self._server.wait_closed()
 
-        print("[NeuralinkServer] Server stopped")
+        print("[CollabNetServer] Server stopped")
 
     async def _handle_connection(self, websocket: WebSocketServerProtocol, path: str) -> None:
         """Handle a new WebSocket connection"""
         user_id = None
 
         try:
-            print(f"[NeuralinkServer] New connection from {websocket.remote_address}")
+            print(f"[CollabNetServer] New connection from {websocket.remote_address}")
 
             # Wait for authentication message
             auth_msg = await websocket.recv()
@@ -179,7 +179,7 @@ class NeuralinkServer:
             username = auth_data.get("username", f"User_{user_id[:8]}")
             color = auth_data.get("color", "#00ff00")
 
-            user = NeuralinkUser(
+            user = CollabNetUser(
                 user_id=user_id,
                 username=username,
                 websocket=websocket,
@@ -195,22 +195,22 @@ class NeuralinkServer:
                 "username": username
             }))
 
-            print(f"[NeuralinkServer] User authenticated: {username} ({user_id[:8]})")
+            print(f"[CollabNetServer] User authenticated: {username} ({user_id[:8]})")
 
             # Handle messages
             async for message in websocket:
                 await self._handle_message(user_id, user, message)
 
         except websockets.exceptions.ConnectionClosed:
-            print(f"[NeuralinkServer] Connection closed: {user_id}")
+            print(f"[CollabNetServer] Connection closed: {user_id}")
         except Exception as e:
-            print(f"[NeuralinkServer] Error handling connection: {e}")
+            print(f"[CollabNetServer] Error handling connection: {e}")
         finally:
             # Clean up
             if user_id:
                 await self._handle_user_disconnect(user_id)
 
-    async def _handle_message(self, user_id: str, user: NeuralinkUser, message: str) -> None:
+    async def _handle_message(self, user_id: str, user: CollabNetUser, message: str) -> None:
         """Handle incoming message from client"""
         try:
             data = json.loads(message)
@@ -232,14 +232,14 @@ class NeuralinkServer:
                 await self._handle_list_sessions(user_id)
 
             else:
-                print(f"[NeuralinkServer] Unknown message type: {msg_type}")
+                print(f"[CollabNetServer] Unknown message type: {msg_type}")
 
         except json.JSONDecodeError:
-            print(f"[NeuralinkServer] Invalid JSON from {user_id}")
+            print(f"[CollabNetServer] Invalid JSON from {user_id}")
         except Exception as e:
-            print(f"[NeuralinkServer] Error handling message: {e}")
+            print(f"[CollabNetServer] Error handling message: {e}")
 
-    async def _handle_create_session(self, user_id: str, user: NeuralinkUser, data: dict) -> None:
+    async def _handle_create_session(self, user_id: str, user: CollabNetUser, data: dict) -> None:
         """Handle session creation"""
         session_name = data.get("session_name", f"Session_{uuid.uuid4()[:8]}")
         password = data.get("password")
@@ -251,7 +251,7 @@ class NeuralinkServer:
         user.is_host = True
 
         # Create session
-        session = NeuralinkSession(
+        session = CollabNetSession(
             session_id=session_id,
             session_name=session_name,
             host_user_id=user_id,
@@ -269,9 +269,9 @@ class NeuralinkServer:
             "session_name": session_name
         }))
 
-        print(f"[NeuralinkServer] Session created: {session_name} ({session_id[:8]}) by {user.username}")
+        print(f"[CollabNetServer] Session created: {session_name} ({session_id[:8]}) by {user.username}")
 
-    async def _handle_join_session(self, user_id: str, user: NeuralinkUser, data: dict) -> None:
+    async def _handle_join_session(self, user_id: str, user: CollabNetUser, data: dict) -> None:
         """Handle user joining a session"""
         session_id = data.get("session_id")
         password = data.get("password")
@@ -324,7 +324,7 @@ class NeuralinkServer:
 
         await self._broadcast_action(session_id, join_action, exclude_user=user_id)
 
-        print(f"[NeuralinkServer] {user.username} joined session {session.session_name}")
+        print(f"[CollabNetServer] {user.username} joined session {session.session_name}")
 
     async def _handle_leave_session(self, user_id: str, data: dict) -> None:
         """Handle user leaving a session"""
@@ -355,9 +355,9 @@ class NeuralinkServer:
         # Delete session if empty
         if len(session.users) == 0:
             del self.sessions[session_id]
-            print(f"[NeuralinkServer] Session {session.session_name} deleted (empty)")
+            print(f"[CollabNetServer] Session {session.session_name} deleted (empty)")
 
-        print(f"[NeuralinkServer] {user.username} left session {session.session_name}")
+        print(f"[CollabNetServer] {user.username} left session {session.session_name}")
 
     async def _handle_action(self, user_id: str, data: dict) -> None:
         """Handle collaborative action"""
@@ -408,7 +408,7 @@ class NeuralinkServer:
                 try:
                     await user.websocket.send(message)
                 except Exception as e:
-                    print(f"[NeuralinkServer] Error sending to {user.username}: {e}")
+                    print(f"[CollabNetServer] Error sending to {user.username}: {e}")
 
     async def _handle_list_sessions(self, user_id: str) -> None:
         """Send list of available sessions"""
@@ -459,17 +459,17 @@ class NeuralinkServer:
 
 # Standalone server
 async def run_server(host: str = "0.0.0.0", port: int = 8765):
-    """Run the Neuralink server standalone"""
-    server = NeuralinkServer(host, port)
+    """Run the CollabNet server standalone"""
+    server = CollabNetServer(host, port)
 
     if await server.start():
-        print("[NeuralinkServer] Server running. Press Ctrl+C to stop.")
+        print("[CollabNetServer] Server running. Press Ctrl+C to stop.")
 
         try:
             # Keep running
             await asyncio.Future()
         except KeyboardInterrupt:
-            print("\n[NeuralinkServer] Shutting down...")
+            print("\n[CollabNetServer] Shutting down...")
             await server.stop()
 
 
