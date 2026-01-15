@@ -10,6 +10,9 @@ Der Avatar ist ein "Always on Top" Desktop-Assistent in Form eines liegenden Bas
 - 👁️ **Den User beobachtet** - Lernt von deinem Spielstil
 - 🔧 **Eigene Tools schreibt** - Meta-Programming im Lock Mode
 - 🤖 **KI-gesteuert** - Nutzt Claude oder GPT für musikalische Intelligenz
+- 🎥 **YouTube Analyzer** - Analysiert Songs und kopiert deren Stil
+- ✂️ **STEM Separator** - Trennt Audio in Vocals, Drums, Bass, Other
+- 🎤 **Humming → MIDI** - Konvertiert gesummte Melodien zu MIDI
 
 ## 🏗️ Architektur
 
@@ -61,6 +64,31 @@ Das **Highlight**: Der Avatar analysiert deinen Workflow und **schreibt automati
 - Du spielst immer Akkorde auf Beat 1 und Arpeggios auf Beat 2
 - Lock Mode erstellt `auto_arpeggiator_v1.py`
 - Ab sofort ergänzt der Avatar automatisch deine Akkorde mit Arpeggios!
+
+## ✨ Interactive Features (NEU!)
+
+Der Avatar bietet jetzt **drei mächtige interaktive Features**:
+
+### 🎥 YouTube Reference Analyzer
+- Download & Analysiere YouTube-Songs
+- Erkenne Tempo, Tonart, Energy-Level
+- KI generiert Ideen im Stil des analysierten Songs
+- **Rechtsklick → "Analyze YouTube Song"**
+
+### ✂️ STEM Separator
+- Trenne Audio in Vocals, Drums, Bass, Other
+- Nutzt Demucs (State-of-the-Art ML)
+- Extrahiere einzelne Stems oder erstelle Instrumentals
+- **Rechtsklick → "Separate STEM"**
+
+### 🎤 Humming → MIDI Recorder
+- Summe/singe eine Melodie
+- Echtzeit-Pitch-Detection
+- Automatische MIDI-Konvertierung
+- Playback als MIDI-Noten
+- **Rechtsklick → "Hum → MIDI"**
+
+📖 **Detaillierte Dokumentation**: Siehe [INTERACTIVE_FEATURES.md](INTERACTIVE_FEATURES.md)
 
 ## 🚀 Installation
 

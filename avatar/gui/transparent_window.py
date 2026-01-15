@@ -27,6 +27,12 @@ class TransparentAvatarWindow(QMainWindow):
     mode_changed = pyqtSignal(str)  # "jam", "learn", "lock"
     exit_requested = pyqtSignal()
 
+    # Interactive feature signals
+    youtube_analyze_requested = pyqtSignal()
+    stem_separate_requested = pyqtSignal()
+    humming_record_requested = pyqtSignal()
+    interactive_features_requested = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
@@ -93,6 +99,26 @@ class TransparentAvatarWindow(QMainWindow):
         self.context_menu.addAction(self.learn_action)
         self.context_menu.addAction(self.lock_action)
         self.context_menu.addAction(self.idle_action)
+
+        # Interactive Features
+        self.context_menu.addSeparator()
+
+        self.features_action = QAction("✨ Interactive Features...", self)
+        self.features_action.triggered.connect(lambda: self.interactive_features_requested.emit())
+        self.context_menu.addAction(self.features_action)
+
+        # Quick access to features
+        self.youtube_action = QAction("🎥 Analyze YouTube Song", self)
+        self.youtube_action.triggered.connect(lambda: self.youtube_analyze_requested.emit())
+        self.context_menu.addAction(self.youtube_action)
+
+        self.stem_action = QAction("✂️ Separate STEM", self)
+        self.stem_action.triggered.connect(lambda: self.stem_separate_requested.emit())
+        self.context_menu.addAction(self.stem_action)
+
+        self.humming_action = QAction("🎤 Hum → MIDI", self)
+        self.humming_action.triggered.connect(lambda: self.humming_record_requested.emit())
+        self.context_menu.addAction(self.humming_action)
 
         # Settings
         self.context_menu.addSeparator()
