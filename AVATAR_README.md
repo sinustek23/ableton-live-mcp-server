@@ -13,6 +13,7 @@ Der Avatar ist ein "Always on Top" Desktop-Assistent in Form eines liegenden Bas
 - 🎥 **YouTube Analyzer** - Analysiert Songs und kopiert deren Stil
 - ✂️ **STEM Separator** - Trennt Audio in Vocals, Drums, Bass, Other
 - 🎤 **Humming → MIDI** - Konvertiert gesummte Melodien zu MIDI
+- 🧠 **Neuralink Mode v1.5** - Kollaboriere mit anderen Produzenten über WAN in Echtzeit
 
 ## 🏗️ Architektur
 
@@ -88,7 +89,17 @@ Der Avatar bietet jetzt **drei mächtige interaktive Features**:
 - Playback als MIDI-Noten
 - **Rechtsklick → "Hum → MIDI"**
 
-📖 **Detaillierte Dokumentation**: Siehe [INTERACTIVE_FEATURES.md](INTERACTIVE_FEATURES.md)
+### 🧠 Neuralink Mode v1.5 (NEU!)
+- **Real-Time Collaboration** über WAN (Internet)
+- Arbeite mit anderen Produzenten zusammen, egal wo sie sind
+- Alle Ableton-Aktionen werden synchronisiert (MIDI, Tempo, Tracks, etc.)
+- Sessions mit bis zu 16 Usern
+- Integrated Chat & User-Visualisierung
+- **Rechtsklick → "🧠 Neuralink Mode"**
+
+📖 **Detaillierte Dokumentation**:
+- [INTERACTIVE_FEATURES.md](INTERACTIVE_FEATURES.md) - YouTube, STEM, Humming
+- [NEURALINK_MODE.md](NEURALINK_MODE.md) - Kollaboration & Setup
 
 ## 🚀 Installation
 
