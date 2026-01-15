@@ -1,14 +1,14 @@
 # 🎵 DAIW - Digital AI Workspace
 
-**The Ultimate AI-Powered Collaborative Music Production Platform**
+**The Ultimate AI-Powered Universal Workspace** ✨ **v2.0 - Quality of Life Edition**
 
-DAIW is a revolutionary desktop application that transforms music production into an intelligent, collaborative, and interactive experience. Featuring an animated bass clef avatar, AI-powered tools, and real-time collaboration capabilities, DAIW is your co-producer that learns, adapts, and creates with you.
+DAIW is a revolutionary desktop application that transforms not just music production, but your entire creative workflow into an intelligent, collaborative, and interactive experience. Featuring an animated bass clef avatar, AI-powered tools, real-time collaboration, and now **universal assistant capabilities** - DAIW is your intelligent co-pilot for music, code, writing, research, and more!
 
 ---
 
 ## 🌟 What is DAIW?
 
-**DAIW** (Digital AI Workspace) is an always-on-top desktop assistant for music production that combines:
+**DAIW** (Digital AI Workspace) is an always-on-top desktop assistant that combines:
 
 - 🤖 **AI-Powered Assistance** - Claude/GPT integration for musical intelligence
 - 🎹 **Interactive Avatar** - Animated bass clef that responds to your workflow
@@ -16,6 +16,24 @@ DAIW is a revolutionary desktop application that transforms music production int
 - 🎥 **Advanced Audio Tools** - YouTube analysis, STEM separation, humming-to-MIDI
 - 🔧 **Meta-Programming** - Avatar writes custom tools based on your workflow
 - 🎨 **Visual Feedback** - See music theory and patterns come alive
+
+### ✨ NEW in v2.0: Quality of Life Features
+
+**Making DAIW the most convenient AI workspace ever!**
+
+- ⌘ **Command Palette** - Instant access to everything (Cmd+K / Ctrl+K)
+- ⌨️ **Keyboard Shortcuts** - Fully customizable hotkeys for all features
+- 💾 **Presets System** - Save/load favorite configurations instantly
+- ↶↷ **Undo/Redo** - Unlimited history with time-travel debugging
+- 🖱️ **Drag & Drop** - Drop audio files, URLs, PDFs, images onto avatar
+- 🎯 **System Tray** - Always-accessible from any application
+- 🚀 **Global Hotkeys** - Trigger features even when app not focused
+- 🌍 **Beyond Music** - Voice assistant, code helper, writing assistant, PDF reader, task manager
+- 💡 **Smart Suggestions** - AI proactively suggests next steps
+- 📋 **Recent Items** - Quick access to recent projects and actions
+
+👉 **[Complete QoL Features Guide](docs/QOL_FEATURES.md)**
+👉 **[Keyboard Shortcuts Reference](docs/KEYBOARD_SHORTCUTS.md)**
 
 ---
 
@@ -92,6 +110,77 @@ Sing or hum melodies, get MIDI notes:
 
 👉 **[Feature Guide](docs/INTERACTIVE_FEATURES.md#humming-recorder)**
 
+### 🌍 Universal Assistant Modes ⚡ NEW in v2.0!
+
+**DAIW now goes beyond music!**
+
+Expand your productivity with AI assistance for any task:
+
+#### 💬 Voice Assistant
+General AI assistant for anything:
+- Answer questions on any topic
+- Get information
+- Conversational context memory
+- Natural language interface
+
+#### 💻 Code Assistant
+Programming help for all languages:
+- Explain any code
+- Debug and fix errors
+- Generate code from descriptions
+- Refactor and optimize
+- Python, JavaScript, Java, C++, and more!
+
+#### ✍️ Writing Assistant
+Improve your writing:
+- Grammar and style improvements
+- Brainstorm ideas
+- Write articles, emails, blogs
+- Summarize long texts
+- Expand on concepts
+
+#### 🖼️ Image Analysis
+Visual AI capabilities:
+- Describe images
+- Object detection
+- Text extraction (OCR)
+- Style analysis
+- Color palette extraction
+
+#### 📄 PDF Reader
+Smart document processing:
+- Extract text from PDFs
+- Summarize documents
+- Answer questions about content
+- Key points extraction
+
+#### 🔍 Web Research
+AI-powered research assistant:
+- Research any topic
+- Compile information
+- Present findings
+- Source recommendations
+
+#### ✅ Task Manager
+AI-powered productivity:
+- Create and track tasks
+- Priority management
+- AI suggests subtasks
+- Progress tracking
+- Smart reminders
+
+#### 📝 Note Taking
+Intelligent note organization:
+- Quick capture notes
+- AI categorization
+- Tag management
+- Search and filter
+- Auto-organization
+
+**Access all modes via Command Palette (Ctrl+K) or System Tray!**
+
+👉 **[Universal Assistant Guide](docs/QOL_FEATURES.md#beyond-music)**
+
 ---
 
 ## 🏗️ Architecture
@@ -103,12 +192,18 @@ DAIW/
 │   │   ├── bass_clef_widget.py       # Animated avatar
 │   │   ├── transparent_window.py     # Main window
 │   │   ├── feature_dialogs.py        # Interactive features
-│   │   └── collabnet_dialogs.py      # Collaboration UI
+│   │   ├── collabnet_dialogs.py      # Collaboration UI
+│   │   ├── command_palette_dialog.py # Command palette UI ⚡NEW
+│   │   └── system_tray.py            # System tray icon ⚡NEW
 │   │
 │   ├── brain/             # AI & Logic
 │   │   ├── ai_controller.py          # LangChain integration
 │   │   ├── mode_manager.py           # Mode coordination
-│   │   └── feature_manager.py        # Feature orchestration
+│   │   ├── feature_manager.py        # Feature orchestration
+│   │   ├── command_palette.py        # Command system ⚡NEW
+│   │   ├── preset_manager.py         # Preset save/load ⚡NEW
+│   │   ├── history_manager.py        # Undo/redo ⚡NEW
+│   │   └── assistant_modes.py        # Universal assistant ⚡NEW
 │   │
 │   ├── audio/             # Audio/MIDI
 │   │   ├── midi_handler.py           # MIDI I/O
@@ -116,6 +211,11 @@ DAIW/
 │   │   ├── youtube_handler.py        # YouTube integration
 │   │   ├── stem_separator.py         # Demucs wrapper
 │   │   └── humming_detector.py       # Pitch detection
+│   │
+│   ├── utils/             # Utilities ⚡NEW
+│   │   ├── config.py                 # Configuration
+│   │   ├── shortcuts.py              # Keyboard shortcuts ⚡NEW
+│   │   └── drag_drop.py              # Drag & drop handler ⚡NEW
 │   │
 │   ├── network/           # Collaboration
 │   │   ├── collabnet_server.py       # WebSocket server
@@ -130,7 +230,9 @@ DAIW/
 ├── docs/                  # Documentation
 │   ├── ARCHITECTURE.md
 │   ├── INTERACTIVE_FEATURES.md
-│   └── COLLABNET_MODE.md
+│   ├── COLLABNET_MODE.md
+│   ├── QOL_FEATURES.md               # QoL guide ⚡NEW
+│   └── KEYBOARD_SHORTCUTS.md         # Shortcuts reference ⚡NEW
 │
 ├── examples/              # Example workflows & skills
 ├── tests/                 # Test suite
