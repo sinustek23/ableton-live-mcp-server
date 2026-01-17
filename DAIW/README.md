@@ -13,9 +13,11 @@ DAIW is a revolutionary desktop application that transforms not just music produ
 - 🤖 **AI-Powered Assistance** - Claude/GPT integration for musical intelligence
 - 🎹 **Interactive Avatar** - Animated bass clef that responds to your workflow
 - 🌐 **Real-Time Collaboration** - Work with producers worldwide via CollabNet Mode
+- 🎛️ **Multi-DAW Support** - Ableton Live + FL Studio integration (MIDI/OSC)
 - 🎥 **Advanced Audio Tools** - YouTube analysis, STEM separation, humming-to-MIDI
 - 🔧 **Meta-Programming** - Avatar writes custom tools based on your workflow
 - 🎨 **Visual Feedback** - See music theory and patterns come alive
+- ⚡ **Ultra-Low Latency** - <10ms response time with C++ extensions
 
 ### ✨ NEW in v2.0: Quality of Life Features
 
@@ -34,6 +36,47 @@ DAIW is a revolutionary desktop application that transforms not just music produ
 
 👉 **[Complete QoL Features Guide](docs/QOL_FEATURES.md)**
 👉 **[Keyboard Shortcuts Reference](docs/KEYBOARD_SHORTCUTS.md)**
+
+---
+
+## 📥 Quick Install
+
+### **Method 1: pip (Recommended)**
+```bash
+pip install daiw
+daiw
+```
+
+### **Method 2: Automated Installer**
+```bash
+# Clone repository
+git clone https://github.com/yourusername/daiw
+cd daiw
+
+# Run installer (auto-detects OS)
+./INSTALL.sh      # Linux/macOS
+INSTALL.bat       # Windows
+```
+
+### **Method 3: From Source**
+```bash
+git clone https://github.com/yourusername/daiw
+cd daiw
+pip install -r requirements.txt
+pip install -e .
+daiw
+```
+
+### **Optional: C++ Extensions** (10x performance boost)
+```bash
+cd cpp_extensions
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j$(nproc)
+cmake --install .
+```
+
+📖 **Full Installation Guide:** [INSTALL.md](docs/INSTALL.md)
 
 ---
 
@@ -248,9 +291,11 @@ DAIW/
 ### Prerequisites
 
 - **Python 3.10+**
-- **Ableton Live** with [AbletonOSC](https://github.com/ideoforms/AbletonOSC)
+- **DAW** (choose one or both):
+  - **Ableton Live** with [AbletonOSC](https://github.com/ideoforms/AbletonOSC)
+  - **FL Studio 20+** (MIDI/OSC integration) 🆕
 - **OS**: Windows, macOS, or Linux
-- **Optional**: MIDI controller, Audio interface, GPU (for STEM separation)
+- **Optional**: MIDI controller, Audio interface, GPU (for STEM separation), C++ compiler (for performance boost)
 
 ### Quick Start
 
