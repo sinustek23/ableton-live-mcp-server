@@ -141,8 +141,8 @@ class TransparentAvatarWindow(QMainWindow):
         # Update avatar state
         state_map = {
             "idle": AvatarState.IDLE,
-            "jam": AvatarState.PLAYING,
-            "learn": AvatarState.LISTENING,
+            "jam": AvatarState.JAMMING,
+            "learn": AvatarState.LEARNING,
             "lock": AvatarState.LOCKED,
         }
 
