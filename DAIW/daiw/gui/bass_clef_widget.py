@@ -1,6 +1,6 @@
 """
-Bass Clef Widget with Animated Eyes and Eyebrows
-Uses the bass clef symbol as a face with expressive features
+Bass Clef Widget - Exact match to user's design
+Based on the uploaded bass clef face image
 """
 
 from PyQt6.QtWidgets import QWidget
@@ -13,41 +13,22 @@ import random
 
 class AvatarState(Enum):
     """Avatar states with different expressions"""
-    IDLE = "idle"           # Calm, neutral
-    THINKING = "thinking"   # Curious, eyebrows raised
-    JAMMING = "jamming"     # Excited, wide eyes
-    LEARNING = "learning"   # Focused, slight squint
-    LOCKED = "locked"       # Intense, furrowed brows
-    HAPPY = "happy"         # Joyful, raised brows
-    ERROR = "error"         # Confused, asymmetric brows
-    SLEEPING = "sleeping"   # Closed eyes
-
-
-class EyeExpression:
-    """Eye animation parameters"""
-    def __init__(self, size=1.0, y_offset=0, blink_speed=1.0, pupil_size=0.6):
-        self.size = size              # Eye size multiplier
-        self.y_offset = y_offset      # Vertical offset
-        self.blink_speed = blink_speed
-        self.pupil_size = pupil_size  # Pupil size relative to eye
-        self.is_closed = False
-
-
-class BrowExpression:
-    """Eyebrow animation parameters"""
-    def __init__(self, angle=0, y_offset=0, curve=1.0):
-        self.angle = angle        # Rotation angle in degrees
-        self.y_offset = y_offset  # Vertical offset
-        self.curve = curve        # Curvature amount
+    IDLE = "idle"
+    THINKING = "thinking"
+    JAMMING = "jamming"
+    LEARNING = "learning"
+    LOCKED = "locked"
+    HAPPY = "happy"
+    ERROR = "error"
+    SLEEPING = "sleeping"
 
 
 class BassClefWidget(QWidget):
     """
-    Animated bass clef avatar with expressive eyes and eyebrows
-    The bass clef symbol naturally forms a face:
-    - Two dots = eyes
-    - Curved lines above = eyebrows
-    - Main curve = body
+    Bass clef avatar matching the exact uploaded design
+    - Two curved eyebrows
+    - Two circular eyes (bass clef dots)
+    - Large bass clef curve body
     """
 
     state_changed = pyqtSignal(str)
@@ -58,366 +39,282 @@ class BassClefWidget(QWidget):
 
         # Avatar state
         self.state = AvatarState.IDLE
-        self.color = QColor(100, 200, 255)  # Default blue
+        self.color = QColor(60, 60, 60)  # Dark gray like image
 
         # Eye animation
-        self.left_eye = EyeExpression()
-        self.right_eye = EyeExpression()
         self.blink_timer = 0
-        self.next_blink = random.randint(120, 240)  # Random blink interval
+        self.next_blink = random.randint(120, 240)
+        self.eyes_closed = False
 
         # Eyebrow animation
-        self.left_brow = BrowExpression()
-        self.right_brow = BrowExpression()
+        self.left_brow_offset = 0
+        self.right_brow_offset = 0
+        self.brow_angle = 0
 
-        # Pupil tracking (follows mouse)
-        self.pupil_offset_x = 0
-        self.pupil_offset_y = 0
+        # Pupil tracking
+        self.pupil_x = 0
+        self.pupil_y = 0
         self.target_pupil_x = 0
         self.target_pupil_y = 0
 
-        # Animation timer
-        self.animation_timer = QTimer(self)
-        self.animation_timer.timeout.connect(self._update_animation)
-        self.animation_timer.start(16)  # ~60 FPS
+        # Animation timer (60 FPS)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self._animate)
+        self.timer.start(16)
 
-        # Expression parameters by state
-        self.state_expressions = {
-            AvatarState.IDLE: {
-                'eye_size': 1.0,
-                'brow_angle': 0,
-                'brow_y': 0,
-                'pupil_size': 0.6,
-                'blink_speed': 1.0
-            },
-            AvatarState.THINKING: {
-                'eye_size': 1.1,
-                'brow_angle': 15,  # Raised
-                'brow_y': -5,
-                'pupil_size': 0.7,
-                'blink_speed': 0.8
-            },
-            AvatarState.JAMMING: {
-                'eye_size': 1.3,   # Wide eyes
-                'brow_angle': 20,
-                'brow_y': -8,
-                'pupil_size': 0.5,
-                'blink_speed': 0.5  # Fast blinking
-            },
-            AvatarState.LEARNING: {
-                'eye_size': 0.9,   # Slight squint
-                'brow_angle': -5,  # Slightly furrowed
-                'brow_y': 2,
-                'pupil_size': 0.8,
-                'blink_speed': 1.2
-            },
-            AvatarState.LOCKED: {
-                'eye_size': 0.85,
-                'brow_angle': -15,  # Furrowed
-                'brow_y': 5,
-                'pupil_size': 0.4,
-                'blink_speed': 1.5
-            },
-            AvatarState.HAPPY: {
-                'eye_size': 1.2,
-                'brow_angle': 25,  # Very raised
-                'brow_y': -10,
-                'pupil_size': 0.7,
-                'blink_speed': 0.7
-            },
-            AvatarState.ERROR: {
-                'eye_size': 1.0,
-                'brow_angle': 0,   # Will be asymmetric
-                'brow_y': 0,
-                'pupil_size': 0.6,
-                'blink_speed': 0.3  # Rapid blinking
-            },
-            AvatarState.SLEEPING: {
-                'eye_size': 0.1,   # Nearly closed
-                'brow_angle': 0,
-                'brow_y': 5,
-                'pupil_size': 0.0,
-                'blink_speed': 3.0  # Slow
-            },
+        # Expression configs
+        self.expressions = {
+            AvatarState.IDLE: {'brow_y': 0, 'brow_angle': 0, 'eye_open': 1.0},
+            AvatarState.THINKING: {'brow_y': -8, 'brow_angle': 5, 'eye_open': 1.1},
+            AvatarState.JAMMING: {'brow_y': -15, 'brow_angle': 10, 'eye_open': 1.3},
+            AvatarState.LEARNING: {'brow_y': 3, 'brow_angle': -3, 'eye_open': 0.9},
+            AvatarState.LOCKED: {'brow_y': 8, 'brow_angle': -8, 'eye_open': 0.85},
+            AvatarState.HAPPY: {'brow_y': -12, 'brow_angle': 8, 'eye_open': 1.2},
+            AvatarState.ERROR: {'brow_y': 0, 'brow_angle': 0, 'eye_open': 1.0},  # Asymmetric
+            AvatarState.SLEEPING: {'brow_y': 5, 'brow_angle': 0, 'eye_open': 0.0},
         }
 
+        self.current_eye_open = 1.0
+        self.setMouseTracking(True)
+
     def set_state(self, state: AvatarState):
-        """Change avatar state and expression"""
+        """Change avatar expression"""
         if self.state != state:
             self.state = state
-            self._apply_expression()
             self.state_changed.emit(state.value)
-            self.update()
 
     def set_color(self, color: QColor):
         """Change avatar color"""
         self.color = color
         self.update()
 
-    def _apply_expression(self):
-        """Apply expression parameters based on current state"""
-        expr = self.state_expressions.get(self.state, self.state_expressions[AvatarState.IDLE])
-
-        # Apply to eyes
-        self.left_eye.size = expr['eye_size']
-        self.right_eye.size = expr['eye_size']
-        self.left_eye.pupil_size = expr['pupil_size']
-        self.right_eye.pupil_size = expr['pupil_size']
-        self.left_eye.blink_speed = expr['blink_speed']
-        self.right_eye.blink_speed = expr['blink_speed']
-
-        # Apply to eyebrows
-        if self.state == AvatarState.ERROR:
-            # Asymmetric for confusion
-            self.left_brow.angle = 15
-            self.left_brow.y_offset = -5
-            self.right_brow.angle = -10
-            self.right_brow.y_offset = 3
-        else:
-            self.left_brow.angle = expr['brow_angle']
-            self.left_brow.y_offset = expr['brow_y']
-            self.right_brow.angle = expr['brow_angle']
-            self.right_brow.y_offset = expr['brow_y']
-
-    def _update_animation(self):
-        """Update animation frame"""
-        # Blink animation
+    def _animate(self):
+        """Animation loop"""
+        # Blink
         self.blink_timer += 1
-
         if self.blink_timer >= self.next_blink:
-            # Trigger blink
-            self.left_eye.is_closed = True
-            self.right_eye.is_closed = True
+            self.eyes_closed = True
             self.blink_timer = 0
             self.next_blink = random.randint(120, 240)
-        elif self.left_eye.is_closed:
-            # Open eyes after brief blink
-            if self.blink_timer > 5:
-                self.left_eye.is_closed = False
-                self.right_eye.is_closed = False
+        elif self.eyes_closed and self.blink_timer > 5:
+            self.eyes_closed = False
 
-        # Smooth pupil movement
-        self.pupil_offset_x += (self.target_pupil_x - self.pupil_offset_x) * 0.1
-        self.pupil_offset_y += (self.target_pupil_y - self.pupil_offset_y) * 0.1
+        # Smooth pupil tracking
+        self.pupil_x += (self.target_pupil_x - self.pupil_x) * 0.15
+        self.pupil_y += (self.target_pupil_y - self.pupil_y) * 0.15
 
-        # State-specific animations
+        # State-based expression
+        expr = self.expressions.get(self.state, self.expressions[AvatarState.IDLE])
+
         if self.state == AvatarState.THINKING:
-            # Slight eyebrow wave
-            offset = math.sin(self.blink_timer * 0.05) * 2
-            self.left_brow.y_offset = -5 + offset
-            self.right_brow.y_offset = -5 - offset
-
+            # Wave eyebrows
+            wave = math.sin(self.blink_timer * 0.05) * 3
+            self.left_brow_offset = expr['brow_y'] + wave
+            self.right_brow_offset = expr['brow_y'] - wave
         elif self.state == AvatarState.JAMMING:
-            # Excited eyebrow bounce
-            bounce = abs(math.sin(self.blink_timer * 0.15)) * 5
-            self.left_brow.y_offset = -8 - bounce
-            self.right_brow.y_offset = -8 - bounce
+            # Bounce eyebrows
+            bounce = abs(math.sin(self.blink_timer * 0.12)) * 8
+            self.left_brow_offset = expr['brow_y'] - bounce
+            self.right_brow_offset = expr['brow_y'] - bounce
+        elif self.state == AvatarState.ERROR:
+            # Asymmetric confusion
+            self.left_brow_offset = -10
+            self.right_brow_offset = 5
+        else:
+            self.left_brow_offset = expr['brow_y']
+            self.right_brow_offset = expr['brow_y']
 
-        elif self.state == AvatarState.SLEEPING:
-            # Gentle breathing
-            breath = math.sin(self.blink_timer * 0.03) * 1
-            self.left_eye.y_offset = breath
-            self.right_eye.y_offset = breath
+        self.brow_angle = expr['brow_angle']
+        self.current_eye_open = expr['eye_open'] if not self.eyes_closed else 0.0
 
         self.update()
 
     def mouseMoveEvent(self, event):
-        """Track mouse for pupil following"""
-        # Calculate pupil target based on mouse position
+        """Track mouse for pupil movement"""
         center = self.rect().center()
         dx = event.pos().x() - center.x()
         dy = event.pos().y() - center.y()
 
-        # Limit pupil movement
-        max_offset = 3
+        # Limit range
         distance = math.sqrt(dx*dx + dy*dy)
-        if distance > 100:
-            scale = max_offset / 100
-            self.target_pupil_x = dx * scale
-            self.target_pupil_y = dy * scale
+        max_offset = 4
+        if distance > 80:
+            self.target_pupil_x = (dx / distance) * max_offset
+            self.target_pupil_y = (dy / distance) * max_offset
         else:
-            self.target_pupil_x = dx * max_offset / 100
-            self.target_pupil_y = dy * max_offset / 100
+            self.target_pupil_x = (dx / 80) * max_offset
+            self.target_pupil_y = (dy / 80) * max_offset
 
     def paintEvent(self, event):
-        """Draw the bass clef avatar with animated features"""
+        """Draw the bass clef avatar exactly as in the image"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        # Center the drawing
-        rect = self.rect()
-        center_x = rect.width() / 2
-        center_y = rect.height() / 2
+        # Get dimensions
+        width = self.width()
+        height = self.height()
+        size = min(width, height)
 
-        # Scale to fit widget
-        scale = min(rect.width(), rect.height()) / 250
+        # Center
+        painter.translate(width / 2, height / 2)
 
-        painter.translate(center_x, center_y)
+        # Scale to fit
+        scale = size / 300
         painter.scale(scale, scale)
 
-        # Draw bass clef body (main curve)
+        # Draw bass clef body (main curve) - matching image
         self._draw_bass_clef_body(painter)
 
-        # Draw eyebrows (curved lines above the dots)
-        self._draw_eyebrow(painter, -35, -50, self.left_brow, "left")
-        self._draw_eyebrow(painter, 15, -50, self.right_brow, "right")
+        # Draw eyebrows
+        self._draw_eyebrow(painter, -50, -80 + self.left_brow_offset, "left")
+        self._draw_eyebrow(painter, 30, -80 + self.right_brow_offset, "right")
 
-        # Draw eyes (the two dots in bass clef)
-        self._draw_eye(painter, -35, -25, self.left_eye)
-        self._draw_eye(painter, 15, -25, self.right_eye)
+        # Draw eyes
+        self._draw_eye(painter, -50, -45)  # Left eye
+        self._draw_eye(painter, 30, -45)   # Right eye
 
     def _draw_bass_clef_body(self, painter):
-        """Draw the main bass clef curve"""
+        """Draw the main bass clef curve matching the uploaded image"""
         path = QPainterPath()
 
-        # Main bass clef curve (simplified, stylized)
-        # Starting from top, curving down and around
-        path.moveTo(0, -70)
+        # Start at top
+        path.moveTo(10, -60)
 
-        # Upper curve
+        # Upper curve (going left and down)
         path.cubicTo(
-            -20, -60,   # Control point 1
-            -30, -40,   # Control point 2
-            -25, -10    # End point
+            -15, -55,   # Control 1
+            -35, -35,   # Control 2
+            -30, 0      # End
         )
 
-        # Middle curve (going down)
+        # Middle section (going down and right)
         path.cubicTo(
-            -20, 20,    # Control point 1
-            -10, 50,    # Control point 2
-            0, 65       # End point
+            -25, 35,    # Control 1
+            -10, 70,    # Control 2
+            15, 90      # End
         )
 
-        # Lower curve (swirl)
+        # Lower curve (the swirl)
         path.cubicTo(
-            10, 80,     # Control point 1
-            30, 75,     # Control point 2
-            35, 60      # End point
+            40, 110,    # Control 1
+            75, 100,    # Control 2
+            85, 70      # End
         )
 
+        # Curve back
         path.cubicTo(
-            40, 45,     # Control point 1
-            35, 30,     # Control point 2
-            20, 25      # End point
+            95, 40,     # Control 1
+            85, 10,     # Control 2
+            60, 0       # End
         )
 
+        # Inner swirl
         path.cubicTo(
-            5, 20,      # Control point 1
-            -5, 25,     # Control point 2
-            -8, 35      # End point
-        )
-
-        # Inner spiral
-        path.cubicTo(
-            -10, 42,    # Control point 1
-            -5, 48,     # Control point 2
-            5, 48       # End point
+            35, -10,    # Control 1
+            20, 0,      # Control 2
+            15, 20      # End
         )
 
         path.cubicTo(
-            15, 48,     # Control point 1
-            20, 42,     # Control point 2
-            18, 35      # End point
+            10, 40,     # Control 1
+            20, 55,     # Control 2
+            40, 55      # End
         )
 
-        # Draw with gradient for depth
-        gradient = QRadialGradient(0, 0, 80)
-        gradient.setColorAt(0, self.color.lighter(120))
-        gradient.setColorAt(1, self.color)
+        path.cubicTo(
+            60, 55,     # Control 1
+            68, 40,     # Control 2
+            62, 25      # End
+        )
 
-        pen = QPen(self.color.darker(150), 8)
+        # Draw with thick pen
+        pen = QPen(self.color, 12)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
         painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawPath(path)
 
-    def _draw_eyebrow(self, painter, x, y, brow: BrowExpression, side: str):
-        """Draw animated eyebrow"""
+    def _draw_eyebrow(self, painter, x, y, side):
+        """Draw curved eyebrow matching image"""
         painter.save()
-        painter.translate(x, y + brow.y_offset)
-        painter.rotate(brow.angle)
+        painter.translate(x, y)
+        painter.rotate(self.brow_angle if side == "left" else -self.brow_angle)
 
         path = QPainterPath()
 
-        # Curved eyebrow shape
         if side == "left":
-            # Curve down on the left
-            path.moveTo(-15, 0)
+            # Left eyebrow - curves down on left
+            path.moveTo(-20, 5)
             path.cubicTo(
-                -10, -3 * brow.curve,
-                -5, -4 * brow.curve,
-                0, -3 * brow.curve
+                -12, -5,
+                -4, -8,
+                4, -6
             )
             path.cubicTo(
-                5, -2 * brow.curve,
-                10, 0,
-                15, 0
+                12, -4,
+                20, 0,
+                25, 5
             )
         else:
-            # Curve down on the right
-            path.moveTo(-15, 0)
+            # Right eyebrow - curves down on right
+            path.moveTo(-25, 5)
             path.cubicTo(
-                -10, -2 * brow.curve,
-                -5, -2 * brow.curve,
-                0, -3 * brow.curve
+                -20, 0,
+                -12, -4,
+                -4, -6
             )
             path.cubicTo(
-                5, -4 * brow.curve,
-                10, -3 * brow.curve,
-                15, 0
+                4, -8,
+                12, -5,
+                20, 5
             )
 
-        pen = QPen(self.color.darker(130), 4)
+        pen = QPen(self.color, 6)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         painter.setPen(pen)
         painter.drawPath(path)
 
         painter.restore()
 
-    def _draw_eye(self, painter, x, y, eye: EyeExpression):
-        """Draw animated eye (bass clef dot)"""
+    def _draw_eye(self, painter, x, y):
+        """Draw eye (bass clef dot) with pupil"""
         painter.save()
-        painter.translate(x, y + eye.y_offset)
+        painter.translate(x, y)
 
-        if eye.is_closed or self.state == AvatarState.SLEEPING:
-            # Draw closed eye (horizontal line)
-            pen = QPen(self.color.darker(130), 3)
+        if self.current_eye_open < 0.1:
+            # Draw closed eye
+            pen = QPen(self.color, 4)
             pen.setCapStyle(Qt.PenCapStyle.RoundCap)
             painter.setPen(pen)
-            painter.drawLine(-10, 0, 10, 0)
+            painter.drawLine(-15, 0, 15, 0)
         else:
-            # Draw open eye
-            eye_radius = 12 * eye.size
+            # Eye size based on expression
+            eye_radius = 18 * self.current_eye_open
 
             # White of eye
             painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(QColor(255, 255, 255))
             painter.drawEllipse(QPointF(0, 0), eye_radius, eye_radius)
 
-            # Pupil (with tracking)
-            pupil_radius = eye_radius * eye.pupil_size
-            pupil_x = self.pupil_offset_x
-            pupil_y = self.pupil_offset_y
-
-            # Gradient for depth
-            gradient = QRadialGradient(pupil_x, pupil_y, pupil_radius)
-            gradient.setColorAt(0, QColor(50, 50, 50))
-            gradient.setColorAt(0.7, QColor(30, 30, 30))
-            gradient.setColorAt(1, QColor(0, 0, 0))
+            # Pupil (dark)
+            pupil_radius = eye_radius * 0.6
+            gradient = QRadialGradient(self.pupil_x, self.pupil_y, pupil_radius)
+            gradient.setColorAt(0, QColor(40, 40, 40))
+            gradient.setColorAt(1, QColor(20, 20, 20))
 
             painter.setBrush(gradient)
             painter.drawEllipse(
-                QPointF(pupil_x, pupil_y),
+                QPointF(self.pupil_x, self.pupil_y),
                 pupil_radius,
                 pupil_radius
             )
 
-            # Highlight for liveliness
-            painter.setBrush(QColor(255, 255, 255, 180))
-            highlight_size = pupil_radius * 0.3
+            # Highlight
+            painter.setBrush(QColor(255, 255, 255, 200))
+            highlight_size = pupil_radius * 0.35
             painter.drawEllipse(
-                QPointF(pupil_x - pupil_radius * 0.3, pupil_y - pupil_radius * 0.3),
+                QPointF(self.pupil_x - pupil_radius*0.3, self.pupil_y - pupil_radius*0.3),
                 highlight_size,
                 highlight_size
             )
@@ -425,25 +322,24 @@ class BassClefWidget(QWidget):
         painter.restore()
 
 
-# Convenience function for testing
+# Test
 if __name__ == "__main__":
     import sys
-    from PyQt6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QWidget
+    from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton
 
     app = QApplication(sys.argv)
 
     window = QWidget()
-    window.setWindowTitle("Bass Clef Avatar Test")
-    window.resize(400, 500)
+    window.setWindowTitle("Bass Clef Avatar - Exact Design")
+    window.resize(500, 600)
 
     layout = QVBoxLayout()
 
-    # Avatar widget
     avatar = BassClefWidget()
     layout.addWidget(avatar, stretch=1)
 
     # State buttons
-    states = [
+    for name, state in [
         ("Idle", AvatarState.IDLE),
         ("Thinking", AvatarState.THINKING),
         ("Jamming", AvatarState.JAMMING),
@@ -452,9 +348,7 @@ if __name__ == "__main__":
         ("Happy", AvatarState.HAPPY),
         ("Error", AvatarState.ERROR),
         ("Sleeping", AvatarState.SLEEPING),
-    ]
-
-    for name, state in states:
+    ]:
         btn = QPushButton(name)
         btn.clicked.connect(lambda checked, s=state: avatar.set_state(s))
         layout.addWidget(btn)
