@@ -20,7 +20,7 @@ aubio==0.4.9  # Pitch detection
 pydub==0.25.1  # Audio processing
 resampy==0.4.2  # Audio resampling
 
-# Neuralink Collaboration (v1.5)
+# CollabNet Collaboration (v1.5)
 websockets==12.0  # WebSocket server/client for real-time collaboration
 
 # AI & LangChain
